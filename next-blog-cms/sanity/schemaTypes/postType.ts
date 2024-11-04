@@ -1,65 +1,55 @@
-import {DocumentTextIcon} from '@sanity/icons'
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import { Rule } from "sanity";
+import { tag } from "./tag";
 
-export const postType = defineType({
-  name: 'post',
-  title: 'Post',
-  type: 'document',
-  icon: DocumentTextIcon,
+
+export const post = {
+  name: "post",
+  title: "Post",
+  type: "document",
+
   fields: [
-    defineField({
-      name: 'title',
-      type: 'string',
-    }),
-    defineField({
-      name: 'slug',
-      type: 'slug',
-      options: {
-        source: 'title',
-      },
-    }),
-    defineField({
-      name: 'author',
-      type: 'reference',
-      to: {type: 'author'},
-    }),
-    defineField({
-      name: 'mainImage',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-      fields: [
+    {
+      name: "title",
+      title: "Title",
+      type: "string",
+      validation: (Rule: Rule) => Rule.required().error('Required')
+    },
+    {
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: {source: "title"},
+      validation: (Rule: Rule) => Rule.required().error('Required')
+    },
+    {
+      name: "publishedAt",
+      title: "Published at",
+      type: "datetime",
+      initialValue: () => new Date().toISOString(),
+    },
+    {
+      name: "excerpt",
+      title: "Excerpt",
+      type: "text",
+      validation: (Rule: Rule) => Rule.max(200).error('Max 200 characters')
+    },
+    {
+      name: "body",
+      title: "Body",
+      type: "array",
+      of: [
+        {type: "block"},
         {
-          name: 'alt',
-          type: 'string',
-          title: 'Alternative text',
+          type: "image",
+          fields: [{type: "text", name: "alt", title: "Alt"}]
         }
       ]
-    }),
-    defineField({
-      name: 'categories',
-      type: 'array',
-      of: [defineArrayMember({type: 'reference', to: {type: 'category'}})],
-    }),
-    defineField({
-      name: 'publishedAt',
-      type: 'datetime',
-    }),
-    defineField({
-      name: 'body',
-      type: 'blockContent',
-    }),
-  ],
-  preview: {
-    select: {
-      title: 'title',
-      author: 'author.name',
-      media: 'mainImage',
     },
-    prepare(selection) {
-      const {author} = selection
-      return {...selection, subtitle: author && `by ${author}`}
-    },
-  },
-})
+    {
+      name: "tags",
+      title: "Tags",
+      type: "array",
+      of:[{type: "reference", to: [{type: tag}]}]
+    }
+  ]
+}
