@@ -7,7 +7,7 @@ export const tag = defineType({
     fields: [
         {
             name: "name",
-            title: "Tag name",
+            title: "Tag Name",
             type: "string",
         },
         {
@@ -16,7 +16,7 @@ export const tag = defineType({
             type: "slug",
             options: {
                 source: "name",
-            }
-        }
-    ]
-})
+            },
+        },
+    ],
+});
